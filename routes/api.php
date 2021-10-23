@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/login', [AuthController::class, 'authenticate']);
 Route::get('/register', [AuthController::class, 'register']);
+
 Route::middleware('auth:sanctum')->get('profile', [ProfileController::class, 'profile']);
 Route::middleware('auth:sanctum')->get('profile/update', [ProfileController::class, 'updateProfile']);
 Route::middleware('auth:sanctum')->get('profile/myfriends', [ProfileController::class, 'myfriends']);

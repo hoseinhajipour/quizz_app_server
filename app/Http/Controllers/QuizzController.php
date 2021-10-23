@@ -11,7 +11,7 @@ class QuizzController extends Controller
     public function GetCetgories()
     {
         $QuizzCategories = QuizzCategory::all();
-        return $QuizzCategories;
+        return ["status" => "ok", "categories" => $QuizzCategories];
     }
 
     public function GetLevelsByCategory(Request $request)

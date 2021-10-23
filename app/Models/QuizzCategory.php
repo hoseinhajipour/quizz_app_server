@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use TCG\Voyager\Facades\Voyager;
 
 class QuizzCategory extends Model
 {
@@ -11,4 +12,9 @@ class QuizzCategory extends Model
 
     protected $table = 'quizz_categories';
     protected $hidden = ['created_at', 'updated_at'];
+
+    public function getIconAttribute($icon)
+    {
+        return Voyager::image( $icon ) ;
+    }
 }

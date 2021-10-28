@@ -10,7 +10,7 @@ class ProfileController extends Controller
 {
     public function Profile(Request $request)
     {
-        return Auth()->user();
+        return ['status' => "ok", "userinfo" => Auth()->user()];
     }
 
     public function myfriends(Request $request)

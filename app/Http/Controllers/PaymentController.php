@@ -21,8 +21,6 @@ class PaymentController extends Controller
 
     public function buy(Request $request)
     {
-
-
         $package_id = $request->input('package_id');
         $Package = Package::where('id', $package_id)->first();
         $user = auth()->user();

@@ -6,12 +6,16 @@
     "license": "MIT",
     "require": {
         "php": "^7.3|^8.0",
+        "econea/nusoap": "dev-master",
         "fruitcake/laravel-cors": "^2.0",
         "guzzlehttp/guzzle": "^7.0.1",
+        "hekmatinasser/verta": "^1.12",
         "laravel/framework": "^8.54",
         "laravel/sanctum": "^2.12",
         "laravel/tinker": "^2.5",
+        "morilog/jalali": "3.*",
         "sanjabteam/verify": "^2.1",
+        "shetabit/payment": "^4.1",
         "tcg/voyager": "^1.5"
     },
     "require-dev": {

@@ -25,3 +25,5 @@ Route::get('/linkstorage', function () {
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
 });
+
+Route::get('/order', [App\Http\Controllers\PaymentController::class, 'verify'])->name('order');

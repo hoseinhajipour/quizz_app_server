@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\MessegeController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuizzController;
 use Illuminate\Http\Request;
@@ -18,8 +19,8 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::get('/login', [AuthController::class, 'authenticate']);
-Route::get('/register', [AuthController::class, 'register']);
+Route::get('login', [AuthController::class, 'authenticate']);
+Route::get('register', [AuthController::class, 'register']);
 
 Route::middleware('auth:sanctum')->get('profile', [ProfileController::class, 'profile']);
 Route::middleware('auth:sanctum')->get('profile/update', [ProfileController::class, 'updateProfile']);
@@ -37,3 +38,5 @@ Route::get('game/GetCetgories', [QuizzController::class, 'GetCetgories']);
 Route::get('game/GetLevelsByCategory', [QuizzController::class, 'GetLevelsByCategory']);
 Route::get('game/GetLevels', [QuizzController::class, 'GetLevels']);
 
+Route::get('packages', [PaymentController::class, 'packages']);
+Route::middleware('auth:sanctum')->get('packages/buy', [PaymentController::class, 'buy']);

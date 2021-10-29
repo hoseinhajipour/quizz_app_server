@@ -39,8 +39,9 @@ Route::get('game/GetCetgories', [QuizzController::class, 'GetCetgories']);
 Route::get('game/GetLevelsByCategory', [QuizzController::class, 'GetLevelsByCategory']);
 Route::get('game/GetLevels', [QuizzController::class, 'GetLevels']);
 
+Route::middleware('auth:sanctum')->post('buypackages', [PaymentController::class, 'buy']);
 Route::get('packages', [PaymentController::class, 'packages']);
-Route::middleware('auth:sanctum')->post('packages/buy', [PaymentController::class, 'buy']);
+
 
 
 // Tournament Controller

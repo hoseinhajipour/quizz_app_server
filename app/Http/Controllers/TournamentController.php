@@ -65,7 +65,7 @@ class TournamentController extends Controller
 
     function updateTournament(Request $request)
     {
-        $Tournament = Tournament::where("id", $request->id)->first();
+        $Tournament = Tournament::where("id", $request->tournament_id)->first();
 
         if ($Tournament->first_user_id == auth()->user()->id) {
             $Tournament->first_user_true_answer = $request->true_answer;

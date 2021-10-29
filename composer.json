@@ -16,7 +16,8 @@
         "morilog/jalali": "3.*",
         "sanjabteam/verify": "^2.1",
         "shetabit/payment": "^4.1",
-        "tcg/voyager": "^1.5"
+        "tcg/voyager": "^1.5",
+        "ext-json": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

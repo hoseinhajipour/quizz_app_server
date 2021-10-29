@@ -6,6 +6,7 @@ use App\Http\Controllers\MessegeController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuizzController;
+use App\Http\Controllers\TournamentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -40,3 +41,11 @@ Route::get('game/GetLevels', [QuizzController::class, 'GetLevels']);
 
 Route::get('packages', [PaymentController::class, 'packages']);
 Route::middleware('auth:sanctum')->post('packages/buy', [PaymentController::class, 'buy']);
+
+
+// Tournament Controller
+Route::middleware('auth:sanctum')->get('tournament/findmatch', [TournamentController::class, 'FindMatchPlayer']);
+Route::middleware('auth:sanctum')->get('mytournament', [TournamentController::class, 'myTournaments']);
+Route::middleware('auth:sanctum')->post('tournament/update', [TournamentController::class, 'updateTournament']);
+Route::middleware('auth:sanctum')->get('tournamentinfo/{id}', [TournamentController::class, 'TournamentInfo']);
+

@@ -93,7 +93,22 @@ class TournamentController extends Controller
 
     function TournamentInfo($id)
     {
-        return Tournament::where("id", $id)->first();
+        $Tournament = Tournament::where("id", $id)->first();
+        $youWin = "wait";
+        if ($Tournament->winner_user_id) {
+            if ($Tournament->winner_user_id == auth()->user()->id) {
+                $youWin = "yes";
+            } else {
+                $youWin = "no";
+            }
+        }
+
+        return [
+            "status" => "ok",
+            "tournament" => $Tournament,
+            "youWin" => $youWin
+        ];
+
     }
 
     function myTournaments()

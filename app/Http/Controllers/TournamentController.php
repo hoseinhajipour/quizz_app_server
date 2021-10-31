@@ -119,4 +119,7 @@ class TournamentController extends Controller
 
         return ["status" => "ok", "tournaments" => $tournaments];
     }
+
+
+
 }

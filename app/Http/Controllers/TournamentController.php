@@ -65,7 +65,10 @@ class TournamentController extends Controller
 
     function updateTournament(Request $request)
     {
-        $Tournament = Tournament::where("id", $request->tournament_id)->first();
+        $Tournament = Tournament::where("id", $request->tournament_id)
+            ->with("firstUser")
+            ->with("secondUser")
+            ->first();
 
         if ($Tournament->first_user_id == auth()->user()->id) {
             $Tournament->first_user_true_answer = $request->true_answer;
@@ -115,6 +118,8 @@ class TournamentController extends Controller
     {
         $tournaments = Tournament::where("first_user_id", auth()->user()->id)
             ->OrWhere("second_user_id", auth()->user()->id)
+            ->with("firstUser")
+            ->with("secondUser")
             ->get();
 
         return ["status" => "ok", "tournaments" => $tournaments];
@@ -127,7 +132,7 @@ class TournamentController extends Controller
         //select Random Quiz
         $questions = [];
         $quizz = [];
-        for ($i = 0; $i < 7; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             array_push($questions, $this->RandomExceptList($questions));
             $quiz = Quizz::where("id", $questions[$i])->first();
             array_push($quizz, $quiz);

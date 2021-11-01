@@ -29,7 +29,7 @@ class AuthController extends Controller
         ]);
         $user = User::where("email", $request->email)->first();
         if (!$user) {
-            $user = User::create(request(['name', 'email', 'password']));
+            $user = User::create(request(['username', 'email', 'password']));
         }
         Auth()->login($user);
         $token = Auth()->user()->createToken($request->email);

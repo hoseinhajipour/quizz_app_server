@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
+use App\Models\Quizz;
 use App\Models\Tournament;
 use Illuminate\Http\Request;
 
@@ -10,10 +11,10 @@ class NotificationController extends Controller
 {
     public function GetUpdate()
     {
-        $notifications = Notification::where("to_user_id", auth()->user()->id)
+        $notification = Notification::where("to_user_id", auth()->user()->id)
             ->where("type", "request_play")
             ->whereBetween('created_at', [now()->subSecond(5), now()])->first();
-        return ["status" => "ok", "notifications" => $notifications];
+        return ["status" => "ok", "notification" => $notification];
     }
 
     public function RequestPlayWithUser(Request $request)
@@ -32,14 +33,18 @@ class NotificationController extends Controller
         $notification = Notification::where("id", $request->id)->first();
         $Tournament = null;
         if ($notification->status == "yes") {
-            $Tournament = Tournament::where("tournament_id", $notification)->first();
-           // $Tournament['questions']
-
+            $Tournament = Tournament::where("id", $notification->tournament_id)->first();
+            $questions = [];
+            foreach (json_decode($Tournament->questions) as $question) {
+                $quiz = Quizz::where("id", $question)->first();
+                array_push($questions, $quiz);
+            }
+            $Tournament['questions'] = $questions;
         }
         return [
             "status" => "ok",
             "notification" => $notification,
-            "Tournament" => $Tournament
+            "tournament" => $Tournament
         ];
     }
 
@@ -52,7 +57,6 @@ class NotificationController extends Controller
         if ($notification->status == "yes") {
             //new NewTournament
             $TournamentController = new  TournamentController();
-
             $Tournament = $TournamentController->NewTournament($notification->from_user_id, $notification->to_user_id);
             $notification->tournament_id = $Tournament->id;
         }
@@ -60,7 +64,7 @@ class NotificationController extends Controller
         return [
             "status" => "ok",
             "notification" => $notification,
-            "Tournament" => $Tournament];
+            "tournament" => $Tournament];
     }
 
 }

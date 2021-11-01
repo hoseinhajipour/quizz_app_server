@@ -53,4 +53,6 @@ Route::middleware('auth:sanctum')->get('tournamentinfo/{id}', [TournamentControl
 
 // notificaton Controller
 Route::middleware('auth:sanctum')->get('notification/update', [NotificationController::class, 'GetUpdate']);
+Route::middleware('auth:sanctum')->get('notification/info', [NotificationController::class, 'GetInfo']);
+Route::middleware('auth:sanctum')->get('notification/changestatus', [NotificationController::class, 'changestatus']);
 Route::middleware('auth:sanctum')->post('notification/requestplay', [NotificationController::class, 'RequestPlayWithUser']);

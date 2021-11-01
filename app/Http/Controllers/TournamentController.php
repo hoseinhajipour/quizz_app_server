@@ -120,6 +120,30 @@ class TournamentController extends Controller
         return ["status" => "ok", "tournaments" => $tournaments];
     }
 
+    function NewTournament($first_user_id, $second_user_id)
+    {
+        $second_user = User::where("id", $second_user_id)->first();
+        $first_user = User::where("id", $first_user_id)->first();
+        //select Random Quiz
+        $questions = [];
+        $quizz = [];
+        for ($i = 0; $i < 7; $i++) {
+            array_push($questions, $this->RandomExceptList($questions));
+            $quiz = Quizz::where("id", $questions[$i])->first();
+            array_push($quizz, $quiz);
+        }
 
+        $Tournament = new Tournament();
+        $Tournament->first_user_id = $first_user_id;
+        $Tournament->second_user_id = $second_user_id;
+        $Tournament->questions = json_encode($questions);
+        $Tournament->status = "play";
+        $Tournament->save();
+        $Tournament['questions'] = $quizz;
+        $Tournament['first_user'] = $first_user;
+        $Tournament['second_user'] = $second_user;
+
+        return $Tournament;
+    }
 
 }

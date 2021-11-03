@@ -21,18 +21,18 @@ class PaymentController extends Controller
 
     public function buy(Request $request)
     {
-        $package_id = $request->input('package_id');
-        $Package = Package::where('id', $package_id)->first();
+
+        $Package = Package::where('id', $request->package_id)->first();
         $user = auth()->user();
         $MerchantID = setting('payment.zarinpal_merchent_code');
-        $zarinpalSandbox = boolval(setting('payment.zarinpal_merchent_code_sandbox'));
+        $zarinpalSandbox = setting('payment.zarinpal_sandbox');
+
         if ($zarinpalSandbox) {
             $client = new nusoap_client('https://sandbox.zarinpal.com/pg/services/WebGate/wsdl', 'wsdl');
         } else {
             $client = new nusoap_client('https://www.zarinpal.com/pg/services/WebGate/wsdl', 'wsdl');
         }
 
-        $client->soap_defencoding = 'UTF-8';
 
         $newPay = Payment::create();
         $newPay->user_id = $user->id;
@@ -42,17 +42,16 @@ class PaymentController extends Controller
         $newPay->save();
         $CallbackURL = url('/order?payment_id=' . $newPay->id); // Required
 
-
-        $result = $client->call('PaymentRequest', [
-            [
-                'MerchantID' => $MerchantID,
-                'Amount' => $Package->price,
-                'Description' => $Package->description,
-                'Email' => $user->email,
-                'Mobile' => $user->mobile,
-                'CallbackURL' => $CallbackURL,
-            ],
-        ]);
+        $client->soap_defencoding = 'UTF-8';
+        $RequestData = [
+            'MerchantID' => $MerchantID,
+            'Amount' => $Package->price,
+            'Description' => $Package->description,
+            'Email' => $user->email,
+            'Mobile' => $user->phone,
+            'CallbackURL' => $CallbackURL,
+        ];
+        $result = $client->call('PaymentRequest', [$RequestData]);
 
         //Redirect to URL You can do it also by creating a form
         if ($result['Status'] == 100) {
@@ -63,10 +62,9 @@ class PaymentController extends Controller
             } else {
                 $result['url'] = 'https://www.zarinpal.com/pg/StartPay/' . $result['Authority'];
             }
-
             return $result;
         } else {
-            return false;
+            return $result;
         }
 
     }
@@ -81,7 +79,7 @@ class PaymentController extends Controller
         $Amount = $Payment->price;
         if ($request->get('Status') == 'OK') {
 
-            $zarinpalSandbox = boolval(setting('payment.zarinpal_merchent_code_sandbox'));
+            $zarinpalSandbox = boolval(setting('payment.zarinpal_sandbox'));
             if ($zarinpalSandbox) {
                 $client = new nusoap_client('https://sandbox.zarinpal.com/pg/services/WebGate/wsdl', 'wsdl');
             } else {
@@ -100,13 +98,12 @@ class PaymentController extends Controller
                 $result['Status'] = 100;
             }
             if ($result['Status'] == 100) {
-
                 $Payment->status = "complete";
                 $Payment->refid = $result['RefID'];
+                $Payment->save();
                 $Package = Package::where('id', $Payment->package_id)->first();
                 $user = User::where('id', $Payment->user_id)->first();
                 $user->coin += $Package->coin;
-                $Payment->save();
                 $user->save();
                 $message = 'پرداخت با موفقیت انجام شد.';
             } else {

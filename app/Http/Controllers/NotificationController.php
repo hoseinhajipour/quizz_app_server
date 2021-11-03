@@ -14,7 +14,10 @@ class NotificationController extends Controller
         $notification = Notification::where("to_user_id", auth()->user()->id)
             ->where("type", "request_play")
             ->whereBetween('created_at', [now()->subSecond(5), now()])->first();
-        return ["status" => "ok", "notification" => $notification];
+        return [
+            "status" => "ok",
+            "userinfo" => auth()->user(),
+            "notification" => $notification];
     }
 
     public function RequestPlayWithUser(Request $request)

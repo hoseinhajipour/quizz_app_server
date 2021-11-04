@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CoinUseType;
 use App\Models\Friend;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -60,5 +61,25 @@ class ProfileController extends Controller
         $userInfo->save();
 
         return ["status" => "ok", "userInfo" => $userInfo];
+    }
+
+    public function UpdateCoinWallet(Request $request)
+    {
+        $CoinUseType = CoinUseType::where("id", $request->type_id)->first();
+
+        $authUser = auth()->user();
+        if ($CoinUseType->type == "decrease") {
+            if ($authUser->coin >= abs($CoinUseType->amount)) {
+                $authUser->coin += $CoinUseType->amount;
+            }
+        } else {
+            $authUser->coin += $CoinUseType->amount;
+        }
+
+        $authUser->save();
+        return ["status" => "ok",
+            "coinUseType" => $CoinUseType,
+            "userInfo" => $authUser
+        ];
     }
 }

@@ -38,5 +38,20 @@ class AuthController extends Controller
 
     }
 
+    public function guestuser(Request $request)
+    {
+        $lastID = User::all()->count() + 1;
+        $username = "quest_" . $lastID;
+        $user = new User();
+        $user->username = $username;
+        $user->rank = 1;
+        $user->role_id = 2;
+        $user->coin = setting('gamesetting.starter_coin');
+        $user->save();
+        Auth()->login($user);
+        $token = Auth()->user()->createToken($user->username);
+        return $token;
+    }
+
 
 }

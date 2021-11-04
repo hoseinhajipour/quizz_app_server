@@ -23,9 +23,13 @@ use Illuminate\Support\Facades\Route;
 */
 Route::post('login', [AuthController::class, 'authenticate']);
 Route::post('register', [AuthController::class, 'register']);
+Route::get('guestuser', [AuthController::class, 'guestuser']);
+
+Route::get('test', [TournamentController::class, 'test']);
 
 Route::middleware('auth:sanctum')->get('profile', [ProfileController::class, 'profile']);
-Route::middleware('auth:sanctum')->get('profile/update', [ProfileController::class, 'updateProfile']);
+Route::middleware('auth:sanctum')->post('profile/update', [ProfileController::class, 'updateProfile']);
+
 Route::middleware('auth:sanctum')->get('profile/myfriends', [ProfileController::class, 'myfriends']);
 Route::middleware('auth:sanctum')->get('friends/followunfollow', [ProfileController::class, 'followunfollowfriends']);
 Route::middleware('auth:sanctum')->get('user/search', [ProfileController::class, 'searchUser']);
@@ -45,6 +49,7 @@ Route::get('packages', [PaymentController::class, 'packages']);
 
 
 // Tournament Controller
+Route::middleware('auth:sanctum')->post('tournament/playwithFriend', [TournamentController::class, 'playwithFriend']);
 Route::middleware('auth:sanctum')->get('tournament/findmatch', [TournamentController::class, 'FindMatchPlayer']);
 Route::middleware('auth:sanctum')->get('mytournament', [TournamentController::class, 'myTournaments']);
 Route::middleware('auth:sanctum')->post('tournament/update', [TournamentController::class, 'updateTournament']);

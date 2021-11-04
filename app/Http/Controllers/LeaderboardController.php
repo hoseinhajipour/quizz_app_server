@@ -11,7 +11,7 @@ class LeaderboardController extends Controller
     public function index(Request $request)
     {
       //  $Leaderboards = Leaderboard::with('user')->get()->take(10);
-        $Leaderboards =User::all()->take(10)->sortByDesc('score');
+        $Leaderboards =User::orderBy('score', 'DESC')->get()->take(10);
         return ["status" => "ok", "leaderboards" => $Leaderboards];
 
     }

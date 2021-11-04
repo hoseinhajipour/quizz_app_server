@@ -53,7 +53,12 @@ class ProfileController extends Controller
         if ($request->phone) {
             $userInfo->phone = $request->phone;
         }
+        if ($request->notification_id) {
+            $userInfo->notification_id = $request->notification_id;
+        }
 
         $userInfo->save();
+
+        return ["status" => "ok", "userInfo" => $userInfo];
     }
 }

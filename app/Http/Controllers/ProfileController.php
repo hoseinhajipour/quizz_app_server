@@ -54,6 +54,9 @@ class ProfileController extends Controller
         if ($request->phone) {
             $userInfo->phone = $request->phone;
         }
+        if ($request->email) {
+            $userInfo->email = $request->email;
+        }
         if ($request->notification_id) {
             $userInfo->notification_id = $request->notification_id;
         }
@@ -65,9 +68,20 @@ class ProfileController extends Controller
 
     public function UpdateCoinWallet(Request $request)
     {
-        $CoinUseType = CoinUseType::where("id", $request->type_id)->first();
-
         $authUser = auth()->user();
+        $CoinUseType = CoinUseType::where("id", $request->type_id)->first();
+        $this->UpdateUserCoinWallet($request->type_id, $authUser->id);
+
+        return ["status" => "ok",
+            "coinUseType" => $CoinUseType,
+            "userInfo" => $authUser
+        ];
+    }
+
+    public function UpdateUserCoinWallet($type_id, $user_id)
+    {
+        $CoinUseType = CoinUseType::where("id", $type_id)->first();
+        $authUser = User::where("id", $user_id)->first();
         if ($CoinUseType->type == "decrease") {
             if ($authUser->coin >= abs($CoinUseType->amount)) {
                 $authUser->coin += $CoinUseType->amount;
@@ -75,7 +89,6 @@ class ProfileController extends Controller
         } else {
             $authUser->coin += $CoinUseType->amount;
         }
-
         $authUser->save();
         return ["status" => "ok",
             "coinUseType" => $CoinUseType,

@@ -47,14 +47,12 @@ Route::get('game/GetLevels', [QuizzController::class, 'GetLevels']);
 Route::middleware('auth:sanctum')->post('buypackages', [PaymentController::class, 'buy']);
 Route::get('packages', [PaymentController::class, 'packages']);
 
-
 // Tournament Controller
 Route::middleware('auth:sanctum')->post('tournament/playwithFriend', [TournamentController::class, 'playwithFriend']);
 Route::middleware('auth:sanctum')->get('tournament/findmatch', [TournamentController::class, 'FindMatchPlayer']);
 Route::middleware('auth:sanctum')->get('mytournament', [TournamentController::class, 'myTournaments']);
 Route::middleware('auth:sanctum')->post('tournament/update', [TournamentController::class, 'updateTournament']);
 Route::middleware('auth:sanctum')->get('tournamentinfo/{id}', [TournamentController::class, 'TournamentInfo']);
-
 
 // notificaton Controller
 Route::middleware('auth:sanctum')->get('notification/update', [NotificationController::class, 'GetUpdate']);

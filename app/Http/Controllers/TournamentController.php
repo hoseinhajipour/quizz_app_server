@@ -12,32 +12,27 @@ use Kutia\Larafirebase\Facades\Larafirebase;
 
 class TournamentController extends Controller
 {
-    public function FindMatchPlayer()
+    public function FindMatchPlayer(Request $request)
     {
+        $to_user_id = intval($request->to_user_id);
         //find random user online
         //any user not online sugget robot user
-        $second_user_id = $this->RandomExceptUser([auth()->user()->id]);
-        $second_user = User::where("id", $second_user_id)->first();
+        if ($to_user_id != 0) {
+            $second_user_id = $request->to_user_id;
+        } else {
+            $second_user_id = $this->RandomExceptUser([auth()->user()->id]);
+        }
+
         $first_user_id = auth()->user()->id;
-        $Tournament = $this->NewTournament($first_user_id, $second_user_id);
+        $Tournament = $this->NewTournament($first_user_id, $second_user_id, $request->category_id);
 
         return ["status" => "ok", "tournament" => $Tournament];
     }
 
-    function RandomExceptList($exceptNr = [])
-    {
-        $fromNr = 1;
-        $exclusiveToNr = Quizz::all()->count() - 1;
-        do {
-            $n = rand($fromNr, $exclusiveToNr);
-
-        } while (in_array($n, $exceptNr));
-        return $n;
-    }
 
     function RandomExceptUser($exceptNr = [])
     {
-        $fromNr = 1;
+        $fromNr = 2;
         $exclusiveToNr = User::all()->count() - 1;
         do {
             $n = rand($fromNr, $exclusiveToNr);
@@ -69,17 +64,34 @@ class TournamentController extends Controller
 
                 $ProfileController->UpdateUserCoinWallet("6", $Tournament->winner_user_id);
 
+                $title = "شما بردید";
+                $message = $Tournament->firstUser->username . " vs " . $Tournament->secondUser->username;
+                $this->sendWebNotification($title, $message, $Tournament->firstUser);
+                $title = "شما باختید";
+                $this->sendWebNotification($title, $message, $Tournament->secondUser);
+
             } else if ($Tournament->first_user_true_answer < $Tournament->second_user_true_answer) {
                 $Tournament->winner_user_id = $Tournament->second_user_id;
                 $Tournament->status = "complete";
 
                 $ProfileController->UpdateUserCoinWallet("6", $Tournament->winner_user_id);
+
+                $title = "شما باختید";
+                $message = $Tournament->firstUser->username . " vs " . $Tournament->secondUser->username;
+                $this->sendWebNotification($title, $message, $Tournament->firstUser);
+                $title = "شما بردید";
+                $this->sendWebNotification($title, $message, $Tournament->secondUser);
             } else {
                 $Tournament->winner_user_id = -1;
                 $Tournament->status = "equal";
                 //equal
                 $ProfileController->UpdateUserCoinWallet("11", $Tournament->first_user_id);
                 $ProfileController->UpdateUserCoinWallet("11", $Tournament->second_user_id);
+
+                $title = "مساوی";
+                $message = $Tournament->firstUser->username . " vs " . $Tournament->secondUser->username;
+                $this->sendWebNotification($title, $message, $Tournament->firstUser);
+                $this->sendWebNotification($title, $message, $Tournament->secondUser);
             }
 
 
@@ -133,36 +145,29 @@ class TournamentController extends Controller
         $second_user_id = $request->to_user_id;
         $Tournament = $this->NewTournament($first_user_id, $second_user_id);
         //send push notification to second user
-        $token = $Tournament->second_user->notification_id;
-        if ($token) {
-            $title = "درخواست بازی از طرف ";
-            $message = auth()->user()->username;
-
-            $this->sendWebNotification($title, $message, $token);
-        }
+        $title = "درخواست بازی از طرف ";
+        $message = auth()->user()->username;
+        $this->sendWebNotification($title, $message, $Tournament->second_user);
 
         return [
             "status" => "ok",
             "tournament" => $Tournament];
     }
 
-    function NewTournament($first_user_id, $second_user_id)
+    function NewTournament($first_user_id, $second_user_id, $category_id)
     {
         $second_user = User::where("id", $second_user_id)->first();
         $first_user = User::where("id", $first_user_id)->first();
         //select Random Quiz
-        $questions = [];
-        $quizz = [];
-        for ($i = 0; $i < setting('gamesetting.quiz_count_per_tournament'); $i++) {
-            array_push($questions, $this->RandomExceptList($questions));
-            $quiz = Quizz::where("id", $questions[$i])->first();
-            array_push($quizz, $quiz);
-        }
-
+        $questions = Quizz::where("category", $category_id)
+            ->inRandomOrder()
+            ->get()
+            ->take(setting('gamesetting.quiz_count_per_tournament'));
+        $quizz = $questions->pluck("id");
         $Tournament = new Tournament();
         $Tournament->first_user_id = $first_user_id;
         $Tournament->second_user_id = $second_user_id;
-        $Tournament->questions = json_encode($questions);
+        $Tournament->questions = json_encode($quizz);
         $Tournament->status = "play";
         $Tournament->save();
         $Tournament['first_user'] = $first_user;
@@ -171,51 +176,69 @@ class TournamentController extends Controller
         return $Tournament;
     }
 
-    public function sendWebNotification($title, $message, $notification_id)
+    function test()
     {
-        $url = 'https://fcm.googleapis.com/fcm/send';
-        $FcmToken = [$notification_id];
+        $questions = Quizz::where("category", 3)->inRandomOrder()->get()->take(3);
+        $quizz = $questions->pluck("id");
+        return ["quizz" => $quizz, "questions" => $questions];
 
-        $serverKey = setting('firebase.token');
+    }
 
-        $data = [
-            "registration_ids" => $FcmToken,
-            "notification" => [
-                "title" => $title,
-                "body" => $message,
-            ]
-        ];
-        $encodedData = json_encode($data);
+    function RandomExceptList($exceptNr = [])
+    {
+        $fromNr = 1;
+        $exclusiveToNr = Quizz::all()->count() - 1;
+        do {
+            $n = rand($fromNr, $exclusiveToNr);
 
-        $headers = [
-            'Authorization:key=' . $serverKey,
-            'Content-Type: application/json',
-        ];
+        } while (in_array($n, $exceptNr));
+        return $n;
+    }
 
-        $ch = curl_init();
+    public function sendWebNotification($title, $message, $user)
+    {
+        if ($user->notification && $user->notification_id) {
+            $url = 'https://fcm.googleapis.com/fcm/send';
+            $FcmToken = [$user->notification_id];
+            $serverKey = setting('firebase.token');
+            $data = [
+                "registration_ids" => $FcmToken,
+                "notification" => [
+                    "title" => $title,
+                    "body" => $message,
+                ]
+            ];
+            $encodedData = json_encode($data);
+            $headers = [
+                'Authorization:key=' . $serverKey,
+                'Content-Type: application/json',
+            ];
 
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
-        // Disabling SSL Certificate support temporarly
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $encodedData);
+            $ch = curl_init();
 
-        // Execute post
-        $result = curl_exec($ch);
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+            // Disabling SSL Certificate support temporarly
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $encodedData);
 
-        if ($result === FALSE) {
-            die('Curl failed: ' . curl_error($ch));
+            // Execute post
+            $result = curl_exec($ch);
+
+            if ($result === FALSE) {
+                die('Curl failed: ' . curl_error($ch));
+            }
+
+            // Close connection
+            curl_close($ch);
+
+            // FCM response
+            return $result;
         }
-
-        // Close connection
-        curl_close($ch);
-
-        // FCM response
-        return $result;
     }
 
 }

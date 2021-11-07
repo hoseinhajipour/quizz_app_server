@@ -14,17 +14,4 @@ class QuizzController extends Controller
         return ["status" => "ok", "categories" => $QuizzCategories];
     }
 
-    public function GetLevelsByCategory(Request $request)
-    {
-        $levels = Quizz::where("category", $request->categoryId)->get()->groupby('level');
-        return ["status" => "ok", "levels" => $levels];
-    }
-
-    public function GetLevels(Request $request)
-    {
-        $levels = Quizz::where("category", $request->categoryId)
-            ->where("level", $request->level)
-            ->get();
-        return $levels;
-    }
 }

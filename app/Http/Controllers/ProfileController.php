@@ -38,7 +38,9 @@ class ProfileController extends Controller
 
     public function searchUser(Request $request)
     {
-        $users = User::where("username", "LIKE", "%$request->username%")->get();
+        $users = User::where("username", "LIKE", "%$request->username%")
+            ->where('id', '!=', auth()->user()->id)
+            ->get();
         return ["status" => "ok", "users" => $users];
     }
 

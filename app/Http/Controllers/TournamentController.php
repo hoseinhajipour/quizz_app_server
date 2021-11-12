@@ -20,7 +20,9 @@ class TournamentController extends Controller
         if ($to_user_id != 0) {
             $second_user_id = $request->to_user_id;
         } else {
-            $second_user_id = $this->RandomExceptUser([auth()->user()->id]);
+            $otherUser = User::where("id", "!=", 1)->inRandomOrder()->get()->take(1);
+            $second_user_id = $otherUser[0]->id;
+            //   $second_user_id = $this->RandomExceptUser([auth()->user()->id]);
         }
 
         $first_user_id = auth()->user()->id;

@@ -40,6 +40,8 @@ Route::middleware('auth:sanctum')->get('messege/inbox', [MessegeController::clas
 Route::middleware('auth:sanctum')->get('messege/history', [MessegeController::class, 'history']);
 Route::middleware('auth:sanctum')->get('messege/send', [MessegeController::class, 'send']);
 
+Route::middleware('auth:sanctum')->post('quizz/new', [QuizzController::class, 'NewQuizz']);
+
 Route::get('game/GetCetgories', [QuizzController::class, 'GetCetgories']);
 
 Route::get('test', [TournamentController::class, 'test']);

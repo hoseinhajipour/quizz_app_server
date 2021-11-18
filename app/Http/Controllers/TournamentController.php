@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Models\Quizz;
 use App\Models\Tournament;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Kutia\Larafirebase\Facades\Larafirebase;
 
@@ -130,13 +131,25 @@ class TournamentController extends Controller
 
     }
 
-    function myTournaments()
+    function myTournaments(Request $request)
     {
-        $tournaments = Tournament::where("first_user_id", auth()->user()->id)
-            ->OrWhere("second_user_id", auth()->user()->id)
-            ->with("firstUser")
-            ->with("secondUser")
-            ->get();
+
+        if($request->status){
+            $tournaments = Tournament::where("first_user_id", auth()->user()->id)
+                ->where('status', $request->status)
+                ->OrWhere("second_user_id", auth()->user()->id)
+                ->whereDate('created_at', Carbon::today())
+                ->with("firstUser")
+                ->with("secondUser")
+                ->get();
+        }else{
+            $tournaments = Tournament::where("first_user_id", auth()->user()->id)
+                ->OrWhere("second_user_id", auth()->user()->id)
+                ->with("firstUser")
+                ->with("secondUser")
+                ->get();
+        }
+
 
         return ["status" => "ok", "tournaments" => $tournaments];
     }

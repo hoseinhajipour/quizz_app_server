@@ -46,9 +46,15 @@ class User extends \TCG\Voyager\Models\User
         'email_verified_at' => 'datetime',
     ];
 
-
+//protected $appends=['']
     public function setPasswordAttribute($password)
     {
         $this->attributes['password'] = bcrypt($password);
     }
+
+    public function getAvatarAttribute($avatar)
+    {
+        return url('/') . '/storage/' . $avatar;
+    }
+
 }

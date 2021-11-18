@@ -175,6 +175,7 @@ class TournamentController extends Controller
         $first_user = User::where("id", $first_user_id)->first();
         //select Random Quiz
         $questions = Quizz::where("category", $category_id)
+            ->where('status','approve')
             ->inRandomOrder()
             ->get()
             ->take(setting('gamesetting.quiz_count_per_tournament'));

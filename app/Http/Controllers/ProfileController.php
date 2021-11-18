@@ -6,12 +6,16 @@ use App\Models\CoinUseType;
 use App\Models\Friend;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use TCG\Voyager\Voyager;
 
 class ProfileController extends Controller
 {
     public function Profile(Request $request)
     {
-        return ['status' => "ok", "userinfo" => Auth()->user()];
+        $userinfo = Auth()->user();
+   //     $userinfo->avatar = url('/') . '/' . $userinfo->avatar;
+        return ['status' => "ok", "userinfo" => $userinfo];
     }
 
     public function myfriends(Request $request)
@@ -62,6 +66,33 @@ class ProfileController extends Controller
         if ($request->notification_id) {
             $userInfo->notification_id = $request->notification_id;
         }
+
+        if ($request->image) {
+
+            $image = $request->image;  // your base64 encoded
+            $image = str_replace(' ', '+', $image);
+            $imageName =  'image_' . time() . '.jpg';
+            \File::put(storage_path(). '/app/public/users/' . $imageName, base64_decode($image));
+            $url = 'users/' . $imageName;
+            $userInfo->avatar = $url;
+            /*
+            $file_name = 'image_' . time() . '.jpg';
+            Storage::disk('/app/public/users/')->put($file_name, base64_decode($request->image));
+            $url = 'storage/users/' . $file_name;
+            $userInfo->avatar = $url;
+            */
+        }
+
+/*
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $name = time() . '.' . $image->getClientOriginalExtension();
+            $destinationPath = storage_path('/app/public/users/');
+            $image->move($destinationPath, $name);
+            $url = 'storage/users/' . $name;
+        }
+*/
+
 
         $userInfo->save();
 

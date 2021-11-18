@@ -28,6 +28,8 @@ class QuizzController extends Controller
         $quizz->user_id = auth()->user()->id;
         $quizz->status = "pending";
         $quizz->save();
+
+        return ["status" => "ok"];
     }
 
 

@@ -38,7 +38,7 @@ Route::middleware('auth:sanctum')->get('leaderboard', [LeaderboardController::cl
 
 Route::middleware('auth:sanctum')->get('messege/inbox', [MessegeController::class, 'inbox']);
 Route::middleware('auth:sanctum')->get('messege/history', [MessegeController::class, 'history']);
-Route::middleware('auth:sanctum')->get('messege/send', [MessegeController::class, 'send']);
+Route::middleware('auth:sanctum')->post('messege/send', [MessegeController::class, 'send']);
 
 Route::middleware('auth:sanctum')->post('quizz/new', [QuizzController::class, 'NewQuizz']);
 

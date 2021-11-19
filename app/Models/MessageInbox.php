@@ -8,4 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class MessageInbox extends Model
 {
     use HasFactory;
+
+    protected $table = "message_inboxes";
 }

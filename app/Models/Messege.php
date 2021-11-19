@@ -10,4 +10,7 @@ class Messege extends Model
     use HasFactory;
 
     protected $table = 'messages';
+
+
+
 }

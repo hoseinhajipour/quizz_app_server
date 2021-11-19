@@ -13,6 +13,9 @@ class MessegeController extends Controller
     public function inbox()
     {
         $inbox = MessageInbox::where("user_id", auth()->user()->id)
+            //->with("lastmessage")
+            ->with("firstUser")
+            ->with("secondUser")
             ->latest()
             ->get();
         return ['status' => "ok", "inbox" => $inbox];
@@ -22,6 +25,7 @@ class MessegeController extends Controller
     {
         $messages = Messege::where("from", auth()->user()->id)
             ->where("to", $request->user_id)
+
             ->latest()
             ->get();
         $otherUser = User::where("id", $request->user_id)->first();

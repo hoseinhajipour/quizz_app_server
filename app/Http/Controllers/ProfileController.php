@@ -75,25 +75,7 @@ class ProfileController extends Controller
             \File::put(storage_path(). '/app/public/users/' . $imageName, base64_decode($image));
             $url = 'users/' . $imageName;
             $userInfo->avatar = $url;
-            /*
-            $file_name = 'image_' . time() . '.jpg';
-            Storage::disk('/app/public/users/')->put($file_name, base64_decode($request->image));
-            $url = 'storage/users/' . $file_name;
-            $userInfo->avatar = $url;
-            */
         }
-
-/*
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $name = time() . '.' . $image->getClientOriginalExtension();
-            $destinationPath = storage_path('/app/public/users/');
-            $image->move($destinationPath, $name);
-            $url = 'storage/users/' . $name;
-        }
-*/
-
-
         $userInfo->save();
 
         return ["status" => "ok", "userInfo" => $userInfo];

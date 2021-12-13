@@ -27,6 +27,13 @@ class QuizzController extends Controller
         $quizz->type = "fouranswer";
         $quizz->user_id = auth()->user()->id;
         $quizz->status = "pending";
+
+        if ($request->file()) {
+            $fileName = time() . '_' . $request->file->getClientOriginalName();
+            $filePath = $request->file('file')->storeAs('users/' . auth()->user()->id, $fileName, 'public');
+            $quizz->file = '/storage/' . $filePath;
+        }
+
         $quizz->save();
 
         return ["status" => "ok"];

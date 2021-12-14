@@ -24,6 +24,8 @@ Route::get('/linkstorage', function () {
 
 Route::group(['prefix' => 'admin'], function () {
     Voyager::routes();
+
+    Route::get('approve-quizze/{id}', [App\Http\Controllers\QuizzController::class, "ApproveQuizze"]);
 });
 
 Route::get('/order', [App\Http\Controllers\PaymentController::class, 'verify'])->name('order');

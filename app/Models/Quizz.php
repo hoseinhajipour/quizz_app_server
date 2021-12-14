@@ -20,9 +20,10 @@ class Quizz extends Model
         if (json_decode($file)) {
             $download_link = (json_decode($file))[0]->download_link;
             return URL::asset("storage/" . $download_link);
-        }else{
+        } else {
             return $file;
         }
 
     }
+
 }

@@ -16,6 +16,7 @@ class MessegeController extends Controller
             //->with("lastmessage")
             ->with("firstUser")
             ->with("secondUser")
+            ->distinct()
             ->latest()
             ->get();
         return ['status' => "ok", "inbox" => $inbox];
@@ -24,8 +25,7 @@ class MessegeController extends Controller
     public function history(Request $request)
     {
         $messages = Messege::where("from", auth()->user()->id)
-            ->where("to", $request->user_id)
-
+            ->OrWhere("to", $request->user_id)
             ->latest()
             ->get();
         $otherUser = User::where("id", $request->user_id)->first();

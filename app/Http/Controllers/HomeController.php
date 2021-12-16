@@ -8,6 +8,10 @@ class HomeController extends Controller
 {
     public function index()
     {
-        return view('livewire.home');
+        return view('pages.home');
+    }
+    public function login()
+    {
+        return view('pages.login');
     }
 }

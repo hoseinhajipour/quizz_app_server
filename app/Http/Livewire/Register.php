@@ -4,12 +4,10 @@ namespace App\Http\Livewire;
 
 use Livewire\Component;
 
-class Login extends Component
+class Register extends Component
 {
-    public $user = "Nsamamera";
-
     public function render()
     {
-        return view('livewire.login');
+        return view('livewire.register');
     }
 }

@@ -10,9 +10,14 @@ class LeaderboardController extends Controller
 {
     public function index(Request $request)
     {
-      //  $Leaderboards = Leaderboard::with('user')->get()->take(10);
-        $Leaderboards =User::orderBy('score', 'DESC')->get()->take(10);
+        //  $Leaderboards = Leaderboard::with('user')->get()->take(10);
+        $Leaderboards = User::orderBy('score', 'DESC')->get()->take(10);
         return ["status" => "ok", "leaderboards" => $Leaderboards];
-
     }
+
+    public function show()
+    {
+        return view("pages.leaderboard");
+    }
+
 }
